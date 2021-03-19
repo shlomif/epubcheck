@@ -135,6 +135,7 @@ public class EpubChecker
   }
   
 
+  private int last_i = -1;
 
   public int run(String[] args)
   {
@@ -144,23 +145,36 @@ public class EpubChecker
     {
       if (processArguments(args))
       {
-        report = createReport();
-        report.initialize();
-        if (listChecks)
+        do
         {
-          dumpMessageDictionary(report);
-          return 0;
-        }
-        if (useCustomMessageFile)
-        {
-          report.setCustomMessageFile(customMessageFile.getAbsolutePath());
-        }
-        returnValue = processFile(report);
-        int returnValue2 = report.generate();
-        if (returnValue == 0)
-        {
-          returnValue = returnValue2;
-        }
+          report = createReport();
+          report.initialize();
+          if (listChecks)
+          {
+            dumpMessageDictionary(report);
+            return 0;
+          }
+          if (useCustomMessageFile)
+          {
+            report.setCustomMessageFile(customMessageFile.getAbsolutePath());
+          }
+          returnValue = processFile(report);
+          int returnValue2 = report.generate();
+          if (returnValue == 0)
+          {
+            returnValue = returnValue2;
+          }
+          if (last_i >= 0 && last_i < args.length-1) {
+            last_i += 1;
+            path = args[last_i];
+            if (path.startsWith("-")){
+              path = null;
+            }
+          }
+          else {
+            path = null;
+          }
+        } while (path != null);
       }
     } catch (Exception ignored)
     {
@@ -741,12 +755,15 @@ public class EpubChecker
         if (path == null)
         {
           path = args[i];
+          last_i = i;
         }
         else
         {
+            continue;
+            /*
           System.err.println(String.format(messages.get("unrecognized_argument"), args[i]));
           displayHelp();
-          return false;
+          return false;*/
         }
       }
 
