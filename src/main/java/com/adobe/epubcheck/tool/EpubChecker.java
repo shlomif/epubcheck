@@ -135,7 +135,7 @@ public class EpubChecker
   }
   
 
-  private int last_i = -1;
+  private int last_reached_cmd_line_arg_idx = -1;
 
   public int run(String[] args)
   {
@@ -145,6 +145,8 @@ public class EpubChecker
     {
       if (processArguments(args))
       {
+        int arg_idx = last_reached_cmd_line_arg_idx;
+        last_reached_cmd_line_arg_idx = -1;
         do
         {
           report = createReport();
@@ -164,9 +166,8 @@ public class EpubChecker
           {
             returnValue = returnValue2;
           }
-          if (last_i >= 0 && last_i < args.length-1) {
-            last_i += 1;
-            path = args[last_i];
+          if (arg_idx >= 0 && arg_idx < args.length-1) {
+            path = args[++arg_idx];
             if (path.startsWith("-")){
               path = null;
             }
@@ -755,7 +756,7 @@ public class EpubChecker
         if (path == null)
         {
           path = args[i];
-          last_i = i;
+          last_reached_cmd_line_arg_idx = i;
         }
         else
         {
